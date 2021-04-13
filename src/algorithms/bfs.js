@@ -1,14 +1,6 @@
-function isValid(visited, row, col, rowEnd, colEnd){
-    if (row < 0 || col < 0 || row >= rowEnd  || col >= colEnd) {
-        return false
-    }
-    if (visited[row][col]) {
-        return false
-    }
-    return true
-}
+import {isValid} from "../helper"
 
-export function BFS(grid, start){
+export default function BFS(grid, start){
     let q = [[start]];
     let x, y, cell;
     let visited = [];

@@ -13,10 +13,20 @@ export function createGrid(row, col, start, finish) {
 }
 
 function createNode(row, col, property) {
-    return { row: row, col: col, property: property };
+    return { row: row, col: col, property: property, distance: Infinity , visited: false, previous: null};
 }
 
 export function editGrid(grid, key, row, col) {
     grid[row][col] = createNode(row, col, key);
     return grid;
+}
+
+export function isValid(visited, row, col, rowEnd, colEnd){
+    if (row < 0 || col < 0 || row >= rowEnd  || col >= colEnd) {
+        return false
+    }
+    if (visited[row][col]) {
+        return false
+    }
+    return true
 }

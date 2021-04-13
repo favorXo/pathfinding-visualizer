@@ -120,15 +120,15 @@
 
 @keyframes pathAnimation {
     0% {
-        fill: #833ab4;
+        fill: #6b1c2d;
     }
 
     20% {
-        fill: #fd1d1d;
+        fill: #801717;
     }
 
     40% {
-        fill: #df2443;
+        fill: #a01b31;
     }
 
     60% {

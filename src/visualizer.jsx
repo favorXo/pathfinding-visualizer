@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Node from "./node.jsx";
 import { createGrid, editGrid } from "./helper";
-import { BFS } from "./algorithms/bfs";
+import BFS from "./algorithms/bfs";
+import dijkstra from "./algorithms/dijkstra";
+import maze from "./algorithms/astar";
 import "./styles/project-styles.css";
 import Button from "./button.js";
 
@@ -9,7 +11,9 @@ export default class Visualizer extends Component {
   constructor(props) {
     super(props);
     this.clearCanvas = this.clearCanvas.bind(this);
-    this.breadthFirstSearch = this.breadthFirstSearch.bind(this);
+    this.visualize = this.visualize.bind(this);
+    this.clearOrderAndPath = this.clearOrderAndPath.bind(this)
+    this.createMaze = this.createMaze.bind(this)
     this.state = {
       grid: [],
       isDown: false,
@@ -21,21 +25,27 @@ export default class Visualizer extends Component {
     };
   }
 
-  breadthFirstSearch() {
-    let [order, path] = BFS(this.state.grid, this.state.start);
+  createMaze(grid){
+    console.log(grid(this.state.grid, this.state.start));
+    this.setState({ grid: grid(this.state.grid, this.state.start) })
+  }
+
+  async visualize(algorithm) {
+    let [order, path] = algorithm(this.state.grid, this.state.start);
     order.shift();
     path.shift();
+    path.pop();
     for (let i = 0; i <= order.length; i++) {
       if (i === order.length) {
         for (let j = 0; j < path.length; j++) {
           let [x, y] = path[j];
-          setTimeout(() => {
+          await setTimeout(() => {
             this.setState({ grid: editGrid(this.state.grid, 3, x, y), running: path.length === j});
           }, this.state.speed * (i + j));
         }
-      } else {
+      } else if (path){
         let [x, y] = order[i];
-        setTimeout(() => {
+        await setTimeout(() => {
           this.setState({ grid: editGrid(this.state.grid, 2, x, y), running: true});
         }, this.state.speed * i);
       }
@@ -43,9 +53,25 @@ export default class Visualizer extends Component {
   }
 
   clearCanvas() {
+    if (this.state.running) return;
     this.setState({
       grid: createGrid(22, 53, this.state.start, this.state.finish),
     });
+  }
+
+  clearOrderAndPath() {
+    if (this.state.running) return;
+    const newGrid = []
+    let count = 0
+    for (const row of this.state.grid) {
+      newGrid.push([])
+      for (const node of row) {
+        if (node.property === 2 || node.property === 3) node.property = 0
+        newGrid[count].push(node)
+      }
+      count += 1
+    }
+    this.setState({grid: newGrid})
   }
 
   handleMouseDown(row, col) {
@@ -145,8 +171,10 @@ export default class Visualizer extends Component {
     const { grid } = this.state;
     return (
       <>
-        <Button text="Clear Canvas" func={() => this.clearCanvas()}></Button>
-        <Button text="BFS" func={() => this.breadthFirstSearch()}></Button>
+        <Button text="Reset" func={() => this.clearCanvas()}></Button>
+        <Button text="Clear" func={() => this.clearOrderAndPath()}></Button>
+        <Button text="BFS" func={() => this.visualize(BFS)}></Button>
+        <Button text="Dijkstra" func={() => this.visualize(dijkstra)}></Button>
         <svg height="1080" width="1920" className="grid">
           {grid.map((row) => {
             return row.map((col) => (
