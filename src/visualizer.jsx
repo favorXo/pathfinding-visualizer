@@ -67,10 +67,12 @@ export default class Visualizer extends Component {
       newGrid.push([])
       for (const node of row) {
         if (node.property === 2 || node.property === 3) node.property = 0
+        node.distance = Infinity
         newGrid[count].push(node)
       }
       count += 1
     }
+    newGrid[this.state.start[0]][this.state.start[1]].distance = 0
     this.setState({grid: newGrid})
   }
 
